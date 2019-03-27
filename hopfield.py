@@ -104,7 +104,6 @@ def plot_results(imgs, cimgs, rimgs, fname='result.png'):
 
 def recover(cimgs, W, b):
     img_size = np.prod(cimgs[0].shape)
-    theta = 0
     num_images = cimgs.shape[0]
 
     corrupted_images = np.array([np.ndarray.flatten(cimgs[i]) for i in range(num_images)])
@@ -122,7 +121,7 @@ def recover(cimgs, W, b):
                 img[i] = 1
             epoch_count += 1
             
-            if epoch_count%1000 == 0:
+            if epoch_count%int(img_size*1.5) == 0:
                 if np.array_equal(recovd_img, img):
                     break
                 else:
