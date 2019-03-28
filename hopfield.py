@@ -13,8 +13,6 @@ import matplotlib.pyplot as plt
 from PIL import Image, ImageOps
 from copy import deepcopy
 
-np.random.seed(123)
-
 
 def load_image(fname):
     img = Image.open(fname).resize((32, 32))
