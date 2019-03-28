@@ -1,7 +1,7 @@
 '''
 Description: CS5340 - Hopfield Network
-Name: Your Name, Your partner's name
-Matric No.: Your matric number, Your partner's matric number
+Name: Anshul Aggarwal, Amit Sukhpal
+Matric No.: A0191501R, A0191496R
 '''
 
 
@@ -12,6 +12,8 @@ import glob
 import matplotlib.pyplot as plt
 from PIL import Image, ImageOps
 from copy import deepcopy
+
+np.random.seed(123)
 
 
 def load_image(fname):
@@ -49,7 +51,7 @@ def learn_hebbian(imgs):
     img_size = np.prod(imgs[0].shape)
     num_images = imgs.shape[0]
 
-    bias = np.random.rand(img_size)
+    bias = np.zeros(img_size)
     weights = np.zeros((img_size, img_size))
 
     nodes = np.array([np.ndarray.flatten(imgs[i]) for i in range(num_images)])
@@ -115,7 +117,7 @@ def recover(cimgs, W, b):
         while(True):
             i = np.random.randint(0,img_size)
             update = np.sum(np.multiply(W[i,:], img))   # division with (img_size*img_size) to calculate actual dot product is not required, as we only need the sign.
-            if update < 0:
+            if update < b[i]:
                 img[i] = -1
             else:
                 img[i] = 1
@@ -150,7 +152,7 @@ def main():
     Wh, bh = learn_hebbian(imgs)
     rimgs_h = recover(cimgs, Wh, bh)
     np.save('hebbian.npy', rimgs_h)
-    plot_results(imgs, cimgs, rimgs_h, "hebbian-results.png")
+    plot_results(imgs, cimgs, rimgs_h, "hebbian-results.png")       #not in original code for main
 
     # Recover 2 -- Max Pseudo Likelihood
     #Wmpl, bmpl = learn_maxpl(imgs)
