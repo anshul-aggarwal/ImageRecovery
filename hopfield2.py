@@ -71,18 +71,6 @@ def calc_val(x):
     return (1 / (1 + math.exp(x)))
 
 
-# def geterror(weights, bias, nodes):
-#     error = np.zeros(nodes.shape)
-#     num_imgs = nodes.shape[0]
-#     img_size = nodes.shape[1]
-
-#     for i in range(num_imgs):
-#         for j in range(img_size):
-#             predicted = sigmoid(np.sum(np.multiply(weights[j,:], nodes[i,:])) + bias[j])
-#             error[i,j] = np.abs(predicted - nodes[i,j])/(num_imgs*img_size)
-    
-#     return error
-
 def get_gradient(weights, bias, nodes, i):
     num_images = nodes.shape[0]
     img_size = nodes.shape[1]
@@ -123,7 +111,7 @@ def learn_maxpl(imgs):
                 bias_update[j] = gradients[j]
                 
             weights[i,:] = weights[i,:] - lr*np.sum(wt_update, axis=0)
-            bias[i] = bias[i] + lr * np.sum(bias_update)
+            bias[i] = bias[i] - lr * np.sum(bias_update)
         if (e_+1)%10 == 0:
             print("Train Epoch", e_+1, time.time() - start)
     
@@ -133,21 +121,8 @@ def learn_maxpl(imgs):
     for i in range(img_size):
         weights[i,i] = 0
         for j in range(i+1, img_size):
-            weights[i,j] = weights[j,i]
+            weights[j,i] = weights[i,j]
     
-    # for e_ in range(epochs):
-    #     for i in range(img_size):
-    #         weights[i,:] = weights[i,:] + np.sum(np.multiply(lr*nodes, geterror(weights, bias, nodes)), axis=0)
-    #         bias[i] = bias[i] + lr * np.sum(geterror(weights, bias, nodes))
-    #     #if (e_+1)%10 == 0:
-    #     print("Train Epoch", e_, time.time() - start)
-
-
-    # Complete this function
-    # You are allowed to modify anything between these lines
-    # Helper functions are allowed
-    #######################################################################
-    #######################################################################
     return weights, bias
 
 
@@ -187,7 +162,8 @@ def recover(cimgs, W, b):
         recovd_img = deepcopy(img)
         while(True):
             i = np.random.randint(0,img_size)
-            update = np.sum(np.multiply(W[i,:], img))   # division with (img_size*img_size) to calculate actual dot product is not required, as we only need the sign.
+            #Changing img*0.5 + 0.5 to simply img changes results. Notice the change. 
+            update = np.sum(np.multiply(W[i,:], img*0.5 + 0.5))  # division with (img_size*img_size) to calculate actual dot product is not required, as we only need the sign.
             if update < b[i]:
                 img[i] = -1
             else:
@@ -220,10 +196,10 @@ def main():
     cimgs = np.asarray(cimgs)
 
     # Recover 1 -- Hebbian
-    # Wh, bh = learn_hebbian(imgs)
-    # rimgs_h = recover(cimgs, Wh, bh)
-    # np.save('hebbian.npy', rimgs_h)
-    # plot_results(imgs, cimgs, rimgs_h, "hebbian-results.png")       #not in original code for main
+    Wh, bh = learn_hebbian(imgs)
+    rimgs_h = recover(cimgs, Wh, bh)
+    np.save('hebbian.npy', rimgs_h)
+    plot_results(imgs, cimgs, rimgs_h, "hebbian-results.png")       #not in original code for main
 
     # Recover 2 -- Max Pseudo Likelihood
     Wmpl, bmpl = learn_maxpl(imgs)
