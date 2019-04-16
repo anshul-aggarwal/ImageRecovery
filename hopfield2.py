@@ -68,7 +68,7 @@ def learn_hebbian(imgs):
 
 
 def calc_val(x):
-    return (1 / (1 + math.exp(x)))
+    return (-1 / (1 + math.exp(x)))  # * 2 - 1
 
 
 def get_gradient(weights, bias, nodes, i):
@@ -78,7 +78,9 @@ def get_gradient(weights, bias, nodes, i):
     for j in range(num_images):
         y = (np.sum(np.multiply(weights[i,:], nodes[j,:])))/(img_size**2) + bias[i]
         gradients[j] = calc_val(y)
-    
+        if nodes[j,i] != 1:
+            gradients[j] = 1 - gradients[j]
+            
     return gradients
 
 
@@ -97,7 +99,7 @@ def learn_maxpl(imgs):
 
     nodes = np.array([np.ndarray.flatten(imgs[i]) for i in range(num_images)])
     nodes = nodes * 0.5 + 0.5       #convert from -1, 1 to 0,1
-    epochs = 200
+    epochs = 300
     lr = 0.05    #learning rate
     start = time.time()
     
@@ -107,9 +109,9 @@ def learn_maxpl(imgs):
             wt_update = np.zeros((num_images, img_size))
             bias_update = np.zeros(num_images)
             for j in range(num_images):
-                wt_update[j,:] = gradients[j]*nodes[j,:]
-                bias_update[j] = gradients[j]
-                
+                wt_update[j,:] = (gradients[j]*nodes[j,:])/num_images
+                bias_update[j] = gradients[j]/num_images
+
             weights[i,:] = weights[i,:] - lr*np.sum(wt_update, axis=0)
             bias[i] = bias[i] - lr * np.sum(bias_update)
         if (e_+1)%10 == 0:
@@ -122,7 +124,7 @@ def learn_maxpl(imgs):
         weights[i,i] = 0
         for j in range(i+1, img_size):
             weights[j,i] = weights[i,j]
-    
+
     return weights, bias
 
 
@@ -162,7 +164,6 @@ def recover(cimgs, W, b):
         recovd_img = deepcopy(img)
         while(True):
             i = np.random.randint(0,img_size)
-            #Changing img*0.5 + 0.5 to simply img changes results. Notice the change. 
             update = np.sum(np.multiply(W[i,:], img*0.5 + 0.5))  # division with (img_size*img_size) to calculate actual dot product is not required, as we only need the sign.
             if update < b[i]:
                 img[i] = -1
