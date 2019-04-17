@@ -80,7 +80,7 @@ def get_gradient(weights, bias, nodes, i):
         gradients[j] = calc_val(y)
         if nodes[j,i] != 1:
             gradients[j] = 1 - gradients[j]
-            
+
     return gradients
 
 
@@ -98,11 +98,11 @@ def learn_maxpl(imgs):
 
 
     nodes = np.array([np.ndarray.flatten(imgs[i]) for i in range(num_images)])
-    nodes = nodes * 0.5 + 0.5       #convert from -1, 1 to 0,1
+    # nodes = nodes * 0.5 + 0.5       #convert from -1, 1 to 0,1
     epochs = 300
     lr = 0.05    #learning rate
     start = time.time()
-    
+
     for e_ in range(epochs):
         for i in range(img_size):
             gradients = get_gradient(weights, bias, nodes, i)
@@ -116,14 +116,14 @@ def learn_maxpl(imgs):
             bias[i] = bias[i] - lr * np.sum(bias_update)
         if (e_+1)%10 == 0:
             print("Train Epoch", e_+1, time.time() - start)
-    
+
 
     #Keeping hopfield characteristic. This affects which part of the image is recovered. For the current config, the lower part is not recovered.
     #On forum, TA said NOT to do it. But when I skip it, the image does not converge.
     for i in range(img_size):
         weights[i,i] = 0
-        for j in range(i+1, img_size):
-            weights[j,i] = weights[i,j]
+        # for j in range(i+1, img_size):
+        #     weights[j,i] = weights[i,j]
 
     return weights, bias
 
@@ -170,15 +170,15 @@ def recover(cimgs, W, b):
             else:
                 img[i] = 1
             epoch_count += 1
-            
+
             if epoch_count%int(img_size*2.0) == 0:
                 if np.array_equal(recovd_img, img):
                     break
                 else:
                     recovd_img = deepcopy(img)
-        
+
         print("Converged after", epoch_count, "epochs")
-    
+
     rimgs = corrupted_images
 
     return rimgs
@@ -186,7 +186,7 @@ def recover(cimgs, W, b):
 
 def main():
     # Load Images and Binarize
-    ifiles = sorted(glob.glob('images/*'))
+    ifiles = sorted(glob.glob('images_2/*'))
     timgs = [load_image(ifile) for ifile in ifiles]
     imgs = np.asarray([binarize_image(img) for img in timgs])
 
