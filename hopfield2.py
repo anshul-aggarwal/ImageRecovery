@@ -68,7 +68,7 @@ def learn_hebbian(imgs):
 
 
 def calc_val(x):
-    return (-1 / (1 + math.exp(x)))  # * 2 - 1
+    return (-1 / (1 + math.exp(x)))
 
 
 def get_gradient(weights, bias, nodes, i):
@@ -164,7 +164,7 @@ def recover(cimgs, W, b):
         recovd_img = deepcopy(img)
         while(True):
             i = np.random.randint(0,img_size)
-            update = np.sum(np.multiply(W[i,:], img*0.5 + 0.5))  # division with (img_size*img_size) to calculate actual dot product is not required, as we only need the sign.
+            update = np.sum(np.multiply(W[i,:], img))  # division with (img_size*img_size) to calculate actual dot product is not required, as we only need the sign.
             if update < b[i]:
                 img[i] = -1
             else:
@@ -186,7 +186,7 @@ def recover(cimgs, W, b):
 
 def main():
     # Load Images and Binarize
-    ifiles = sorted(glob.glob('images_2/*'))
+    ifiles = sorted(glob.glob('images/*'))
     timgs = [load_image(ifile) for ifile in ifiles]
     imgs = np.asarray([binarize_image(img) for img in timgs])
 
