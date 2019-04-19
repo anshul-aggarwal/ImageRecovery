@@ -72,7 +72,7 @@ def calc_val(x):
     #                  = -1*(exp(-x))/((exp(x) + 1)/exp(x))
     #                  = -1*(exp(-x+x))/(1 + exp(x))
     #                  = -1/(1 + exp(x))
-    # The related image vector is mmultiplied when differentiating by weight, and by 1 if differentiating by bias, in get_gradient. 
+    # The related image vector is multiplied when differentiating by weight, and 1 if differentiating by bias, in learn_maxpl.
     return (-1 / (1 + math.exp(x)))
 
 
@@ -156,7 +156,7 @@ def recover(cimgs, W, b):
         while(True):
             i = np.random.randint(0,img_size) 
             # Random pixel is chosen for recovery, rather than sequential recovery. 
-            # This is because corruption is sequential (block corruption), sequential recovery may cause corrupted pixels to further coupt non-corrupted pixels.
+            # This is because corruption is sequential (block corruption), sequential recovery may cause corrupted pixels to further corrupt non-corrupted pixels.
             update = np.sum(np.multiply(W[i,:], img))
             if update < b[i]:
                 img[i] = -1
