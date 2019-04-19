@@ -66,6 +66,13 @@ def learn_hebbian(imgs):
 
 
 def calc_val(x):
+    # Derivative of the log maximum pseudo-likelihood, reduced.
+    # d(-ln(sgm(x))/dx = -1/sgm(x) * sgm(x) * (1 - sgm(x)) 
+    #                  = -1*(1 + exp(-x) - 1)/(1 + exp(-x))
+    #                  = -1*(exp(-x))/((exp(x) + 1)/exp(x))
+    #                  = -1*(exp(-x+x))/(1 + exp(x))
+    #                  = -1/(1 + exp(x))
+    # The related image vector is mmultiplied when differentiating by weight, and by 1 if differentiating by bias, in get_gradient. 
     return (-1 / (1 + math.exp(x)))
 
 
@@ -147,7 +154,9 @@ def recover(cimgs, W, b):
         epoch_count = 0
         recovd_img = deepcopy(img)
         while(True):
-            i = np.random.randint(0,img_size)
+            i = np.random.randint(0,img_size) 
+            # Random pixel is chosen for recovery, rather than sequential recovery. 
+            # This is because corruption is sequential (block corruption), sequential recovery may cause corrupted pixels to further coupt non-corrupted pixels.
             update = np.sum(np.multiply(W[i,:], img))
             if update < b[i]:
                 img[i] = -1
